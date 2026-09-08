@@ -6,6 +6,61 @@
   body {
     @apply bg-emerald-50/40 text-gray-900 font-sans antialiased min-h-screen flex flex-col selection:bg-agri-green-200;
   }
+
+  html.dark body {
+    @apply bg-slate-950 text-slate-100 selection:bg-emerald-900;
+  }
+
+  html.dark .bg-white {
+    @apply bg-slate-900;
+  }
+
+  html.dark .bg-gray-50,
+  html.dark .bg-gray-50\/70 {
+    @apply bg-slate-800;
+  }
+
+  html.dark .bg-emerald-50,
+  html.dark .bg-emerald-50\/30,
+  html.dark .bg-emerald-50\/40,
+  html.dark .bg-emerald-50\/50,
+  html.dark .bg-emerald-50\/60 {
+    @apply bg-slate-900;
+  }
+
+  html.dark .text-gray-900,
+  html.dark .text-gray-800,
+  html.dark .text-gray-700 {
+    @apply text-slate-100;
+  }
+
+  html.dark .text-gray-600,
+  html.dark .text-gray-500 {
+    @apply text-slate-300;
+  }
+
+  html.dark .text-agri-green-900 {
+    @apply text-emerald-300;
+  }
+
+  html.dark .border-gray-100,
+  html.dark .border-gray-200,
+  html.dark .border-gray-300,
+  html.dark .border-emerald-100,
+  html.dark .border-emerald-200 {
+    @apply border-slate-700;
+  }
+
+  html.dark input,
+  html.dark select,
+  html.dark textarea {
+    @apply bg-slate-900 text-slate-100 border-slate-700;
+  }
+
+  html.dark input::placeholder,
+  html.dark textarea::placeholder {
+    @apply text-slate-500;
+  }
 }
 
 /* Touch friendly custom scrollbars */
@@ -21,4 +76,12 @@
 ::-webkit-scrollbar-thumb {
   background: #2e7d32;
   border-radius: 9999px;
+}
+
+html.dark ::-webkit-scrollbar-track {
+  background: #0f172a;
+}
+
+html.dark ::-webkit-scrollbar-thumb {
+  background: #15803d;
 }

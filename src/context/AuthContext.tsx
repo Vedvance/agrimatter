@@ -20,7 +20,7 @@ interface AuthContextType {
   isSupabaseLive: boolean;
   sendOtp: (phone: string) => Promise<{ success: boolean; message: string }>;
   verifyOtp: (phone: string, otp: string, name?: string) => Promise<{ success: boolean; message: string }>;
-  signUpWithEmail: (email: string, pass: string, name: string) => Promise<{ success: boolean; message: string }>;
+  signUpWithEmail: (email: string, pass: string, name: string) => Promise<{ success: boolean; message: string; requiresEmailConfirmation?: boolean }>;
   loginWithEmail: (email: string, pass: string) => Promise<{ success: boolean; message: string }>;
   login: (phoneOrEmail: string) => void;
   logout: () => void;
@@ -104,7 +104,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return { success: true, message: `OTP sent via Supabase SMS to ${formattedPhone}` };
       } catch (err: any) {
         console.warn("Supabase OTP attempt:", err.message);
-        return { success: true, message: `Demo OTP 123456 sent to +91 ${phone} (Supabase SMS gateway unconfigured)` };
+        return {
+          success: false,
+          message: err.message || 'Supabase SMS is not configured. Enable Phone provider and configure an SMS provider in Supabase Auth settings.'
+        };
       }
     }
 
@@ -140,6 +143,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
       } catch (err: any) {
         console.warn("Supabase verify notice:", err.message);
+        return {
+          success: false,
+          message: err.message || 'Supabase OTP verification failed. Check the Phone provider and SMS gateway configuration.'
+        };
       }
     }
 
@@ -165,7 +172,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   // Live Supabase Email / Password Signup
-  const signUpWithEmail = async (email: string, pass: string, name: string): Promise<{ success: boolean; message: string }> => {
+  const signUpWithEmail = async (email: string, pass: string, name: string): Promise<{ success: boolean; message: string; requiresEmailConfirmation?: boolean }> => {
     if (isSupabaseConfigured()) {
       try {
         const { data, error } = await supabase.auth.signUp({
@@ -177,7 +184,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         });
         if (error) throw error;
 
-        if (data.user) {
+        if (data.user && data.session) {
           const newUser: UserProfile = {
             id: data.user.id,
             full_name: name,
@@ -191,6 +198,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           localStorage.setItem('agrimatter_user', JSON.stringify(newUser));
           await syncUserProfile(newUser);
           return { success: true, message: "Supabase account created successfully!" };
+        }
+
+        if (data.user && !data.session) {
+          return {
+            success: true,
+            requiresEmailConfirmation: true,
+            message: 'Account created. Please verify your email, then log in.'
+          };
         }
       } catch (err: any) {
         return { success: false, message: err.message || "Failed to create Supabase account." };

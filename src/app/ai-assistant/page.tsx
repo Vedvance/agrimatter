@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react';
 import { useLanguage } from '@/context/LanguageContext';
-import { answerAssistantQuery } from '@/lib/advisory-engine';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Bot, Mic, MicOff, Send, Sparkles, User, AlertTriangle } from 'lucide-react';
@@ -19,6 +18,7 @@ export default function AIAssistantPage() {
 
   const [inputQuery, setInputQuery] = useState('');
   const [isListening, setIsListening] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
 
   const suggestedQuestions = language === 'hi' ? [
     "गेहूँ में पीला रतुआ का इलाज क्या है?",
@@ -43,9 +43,9 @@ export default function AIAssistantPage() {
     }
   ]);
 
-  const handleSend = (textToSend?: string) => {
+  const handleSend = async (textToSend?: string) => {
     const query = textToSend || inputQuery;
-    if (!query.trim()) return;
+    if (!query.trim() || isGenerating) return;
 
     const userMsg: ChatMessage = {
       id: Date.now().toString(),
@@ -57,17 +57,39 @@ export default function AIAssistantPage() {
     setMessages((prev) => [...prev, userMsg]);
     if (!textToSend) setInputQuery('');
 
-    // Generate rule-based bot answer
-    setTimeout(() => {
-      const response = answerAssistantQuery(query, language);
+    setIsGenerating(true);
+    try {
+      const response = await fetch('/api/assistant', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ question: query, language })
+      });
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || 'Unable to get an assistant response');
+      }
+
       const botMsg: ChatMessage = {
         id: (Date.now() + 1).toString(),
         sender: 'bot',
-        text: response.answer,
+        text: data.answer,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       };
       setMessages((prev) => [...prev, botMsg]);
-    }, 400);
+    } catch {
+      const botMsg: ChatMessage = {
+        id: (Date.now() + 1).toString(),
+        sender: 'bot',
+        text: language === 'hi'
+          ? 'अभी AI उत्तर उपलब्ध नहीं है। कृपया थोड़ी देर बाद दोबारा प्रयास करें।'
+          : 'The AI answer is temporarily unavailable. Please try again shortly.',
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      };
+      setMessages((prev) => [...prev, botMsg]);
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   const toggleMic = () => {
@@ -190,7 +212,7 @@ export default function AIAssistantPage() {
           />
 
           <Button onClick={() => handleSend()} size="md" className="px-4">
-            <Send className="w-5 h-5" />
+            {isGenerating ? <Sparkles className="w-5 h-5 animate-pulse" /> : <Send className="w-5 h-5" />}
           </Button>
 
         </div>

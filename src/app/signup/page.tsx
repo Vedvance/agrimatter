@@ -98,6 +98,10 @@ export default function SignupPage() {
       setStatusMsg({ type: 'error', text: 'Please complete all required fields.' });
       return;
     }
+    if (password.length < 6) {
+      setStatusMsg({ type: 'error', text: 'Password must be at least 6 characters.' });
+      return;
+    }
 
     setLoading(true);
     setStatusMsg(null);
@@ -106,7 +110,11 @@ export default function SignupPage() {
     setLoading(false);
 
     if (res.success) {
-      router.push('/onboarding');
+      if (res.requiresEmailConfirmation) {
+        setStatusMsg({ type: 'success', text: res.message });
+      } else {
+        router.push('/onboarding');
+      }
     } else {
       setStatusMsg({ type: 'error', text: res.message });
     }

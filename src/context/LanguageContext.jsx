@@ -5,7 +5,8 @@ const LanguageContext = createContext();
 
 export const LanguageProvider = ({ children }) => {
   const [lang, setLang] = useState(() => {
-    return localStorage.getItem('agrimatter_lang') || 'en';
+    if (typeof window === 'undefined') return 'en';
+    return window.localStorage.getItem('agrimatter_lang') || 'en';
   });
 
   const [isSpeaking, setIsSpeaking] = useState(false);

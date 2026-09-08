@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
-import { useLanguage } from '../context/LanguageContext';
+import React, { useRef, useState } from 'react';
+import { useLanguage } from '../context/LanguageContext.jsx';
 import { cropDiseasesDatabase } from '../data/diseasesData';
 import { 
   Activity, 
-  UploadCloud, 
+  UploadCloud,
+  Camera,
   Sparkles, 
   AlertTriangle, 
   ShieldCheck, 
@@ -12,7 +13,9 @@ import {
   CheckCircle2, 
   Volume2, 
   RefreshCw,
-  Info
+  Info,
+  X,
+  Image as ImageIcon
 } from 'lucide-react';
 
 export const CropDoctor = () => {
@@ -20,15 +23,19 @@ export const CropDoctor = () => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [analyzing, setAnalyzing] = useState(false);
   const [diagnosis, setDiagnosis] = useState(null);
+  const [uploadError, setUploadError] = useState('');
+  const [isDragging, setIsDragging] = useState(false);
+  const analysisTimerRef = useRef(null);
 
   // Trigger analysis for a sample or uploaded leaf
   const runDiagnosis = (diseaseItem) => {
+    clearTimeout(analysisTimerRef.current);
     setSelectedImage(diseaseItem.sampleImage);
     setAnalyzing(true);
     setDiagnosis(null);
 
     // Simulate neural net forward pass
-    setTimeout(() => {
+    analysisTimerRef.current = setTimeout(() => {
       setDiagnosis(diseaseItem);
       setAnalyzing(false);
 
@@ -40,18 +47,33 @@ export const CropDoctor = () => {
     }, 1200);
   };
 
-  // Handle manual image file upload
-  const handleFileUpload = (e) => {
-    const file = e.target.files[0];
+  const processImageFile = (file) => {
     if (!file) return;
 
+    const supportedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+    if (!supportedTypes.includes(file.type)) {
+      setUploadError(lang === 'hi'
+        ? 'कृपया JPG, PNG या WEBP फोटो चुनें।'
+        : 'Please choose a JPG, PNG, or WEBP image.');
+      return;
+    }
+
+    if (file.size > 10 * 1024 * 1024) {
+      setUploadError(lang === 'hi'
+        ? 'फोटो का आकार 10 MB से कम होना चाहिए।'
+        : 'Photo size must be smaller than 10 MB.');
+      return;
+    }
+
+    setUploadError('');
+    clearTimeout(analysisTimerRef.current);
     const reader = new FileReader();
     reader.onload = () => {
       setSelectedImage(reader.result);
       setAnalyzing(true);
       setDiagnosis(null);
 
-      setTimeout(() => {
+      analysisTimerRef.current = setTimeout(() => {
         // Match a random realistic disease or first disease
         const matched = cropDiseasesDatabase[0];
         setDiagnosis(matched);
@@ -59,6 +81,25 @@ export const CropDoctor = () => {
       }, 1400);
     };
     reader.readAsDataURL(file);
+  };
+
+  const handleFileUpload = (e) => {
+    processImageFile(e.target.files[0]);
+    e.target.value = '';
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    setIsDragging(false);
+    processImageFile(e.dataTransfer.files[0]);
+  };
+
+  const clearUpload = () => {
+    clearTimeout(analysisTimerRef.current);
+    setSelectedImage(null);
+    setDiagnosis(null);
+    setAnalyzing(false);
+    setUploadError('');
   };
 
   return (
@@ -84,27 +125,66 @@ export const CropDoctor = () => {
         {/* Left Column: Upload / Camera & Sample Leaves */}
         <div className="lg:col-span-5 space-y-6">
           {/* Upload Area */}
-          <div className="bg-white rounded-3xl p-6 border-2 border-dashed border-emerald-300 hover:border-emerald-500 transition shadow-sm text-center">
-            <label className="cursor-pointer block">
+          <div
+            onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+            onDragLeave={() => setIsDragging(false)}
+            onDrop={handleDrop}
+            className={`bg-white rounded-3xl p-6 border-2 border-dashed transition shadow-sm text-center ${
+              isDragging ? 'border-emerald-600 bg-emerald-50' : 'border-emerald-300 hover:border-emerald-500'
+            }`}
+          >
+            <div className="w-16 h-16 rounded-2xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-600 mx-auto mb-4">
+              <ImageIcon className="w-8 h-8" />
+            </div>
+            <h3 className="font-bold text-slate-800 text-base mb-1">
+              {lang === 'hi' ? 'पत्ती की साफ फोटो अपलोड करें' : 'Upload a clear leaf photo'}
+            </h3>
+            <p className="text-xs text-slate-500 mb-4">
+              {lang === 'hi' ? 'फोटो यहां खींचकर छोड़ें या नीचे से चुनें' : 'Drag and drop an image here, or choose an option below'}
+            </p>
+            <div className="flex flex-col sm:flex-row justify-center gap-2">
+              <label className="cursor-pointer inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-5 py-2.5 rounded-xl shadow-md transition">
               <input
                 type="file"
-                accept="image/*"
+                accept="image/jpeg,image/png,image/webp"
                 onChange={handleFileUpload}
                 className="hidden"
               />
-              <div className="w-16 h-16 rounded-2xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-600 mx-auto mb-4 group-hover:scale-110 transition">
-                <UploadCloud className="w-8 h-8" />
-              </div>
-              <h3 className="font-bold text-slate-800 text-base mb-1">
-                {t('doctor.dragDrop')}
-              </h3>
-              <p className="text-xs text-slate-500 mb-4">
-                Supports JPG, PNG, WEBP from smartphone camera or gallery
+                <UploadCloud className="w-4 h-4" />
+                <span>{lang === 'hi' ? 'गैलरी से चुनें' : 'Choose from gallery'}</span>
+              </label>
+              <label className="cursor-pointer inline-flex items-center justify-center gap-2 bg-white hover:bg-emerald-50 text-emerald-700 font-bold text-xs px-5 py-2.5 rounded-xl border border-emerald-200 transition">
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  capture="environment"
+                  onChange={handleFileUpload}
+                  className="hidden"
+                />
+                <Camera className="w-4 h-4" />
+                <span>{lang === 'hi' ? 'कैमरा खोलें' : 'Use camera'}</span>
+              </label>
+            </div>
+            <p className="mt-4 text-[11px] text-slate-400 font-medium">
+              JPG, PNG, WEBP · {lang === 'hi' ? 'अधिकतम 10 MB' : 'Maximum 10 MB'}
+            </p>
+            {uploadError && (
+              <p role="alert" className="mt-3 text-xs font-bold text-rose-600 bg-rose-50 border border-rose-200 rounded-xl px-3 py-2">
+                {uploadError}
               </p>
-              <span className="inline-block bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-5 py-2.5 rounded-xl shadow-md transition">
-                Browse Leaf Image
-              </span>
-            </label>
+            )}
+            {selectedImage && !analyzing && (
+              <div className="mt-5 flex items-center gap-3 text-left bg-slate-50 rounded-2xl border border-slate-200 p-3">
+                <img src={selectedImage} alt="Selected leaf" className="w-14 h-14 object-cover rounded-xl border border-emerald-200" />
+                <div className="min-w-0 flex-1">
+                  <p className="text-xs font-bold text-slate-800 truncate">{lang === 'hi' ? 'फोटो तैयार है' : 'Photo ready for review'}</p>
+                  <p className="text-[11px] text-emerald-700 font-semibold">{lang === 'hi' ? 'AI रिपोर्ट नीचे उपलब्ध है' : 'AI report is ready below'}</p>
+                </div>
+                <button type="button" onClick={clearUpload} aria-label="Remove selected image" className="p-2 text-slate-400 hover:text-rose-600 transition">
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Quick 1-Click Samples for SIH Jury Presentation */}

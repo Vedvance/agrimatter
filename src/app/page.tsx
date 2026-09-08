@@ -6,6 +6,7 @@ import { useLanguage } from '@/context/LanguageContext';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Alert } from '@/components/ui/Alert';
+import { CropDoctorEntry } from '@/components/CropDoctorEntry';
 import { 
   Sprout, 
   CloudSun, 
@@ -83,6 +84,7 @@ export default function LandingPage() {
 
   return (
     <div className="space-y-16 py-4">
+      <CropDoctorEntry />
       
       {/* Hero Section */}
       <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-agri-green-900 via-agri-green-800 to-agri-brown-900 text-white p-6 sm:p-12 shadow-xl border border-emerald-700">

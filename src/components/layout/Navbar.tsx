@@ -7,13 +7,15 @@ import { usePathname } from 'next/navigation';
 import { useLanguage } from '@/context/LanguageContext';
 import { useAuth } from '@/context/AuthContext';
 import { LanguageToggle } from '@/components/LanguageToggle';
-import { Sprout, Menu, X, CloudSun, Leaf, FlaskConical, Bot, User, ShieldAlert } from 'lucide-react';
+import { useTheme } from '@/context/ThemeContext';
+import { Sprout, Menu, X, CloudSun, Leaf, FlaskConical, Bot, User, ShieldAlert, Moon, Sun } from 'lucide-react';
 
 export const Navbar: React.FC = () => {
   const { t } = useLanguage();
   const { isLoggedIn, user, logout } = useAuth();
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { theme, toggleTheme, mounted } = useTheme();
 
   const navLinks = [
     { href: '/dashboard', label: t.nav.dashboard, icon: Sprout },
@@ -26,7 +28,7 @@ export const Navbar: React.FC = () => {
   ];
 
   return (
-    <header className="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-emerald-100 shadow-sm">
+    <header className="sticky top-0 z-40 bg-white/95 dark:bg-slate-950/95 backdrop-blur border-b border-emerald-100 dark:border-slate-800 shadow-sm transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           
@@ -70,6 +72,15 @@ export const Navbar: React.FC = () => {
           {/* Right Action Items */}
           <div className="hidden sm:flex items-center space-x-3">
             <LanguageToggle />
+            <button
+              type="button"
+              onClick={toggleTheme}
+              className="p-2 rounded-xl border border-emerald-200 dark:border-slate-700 text-agri-green-800 dark:text-amber-300 hover:bg-emerald-50 dark:hover:bg-slate-800 transition-colors"
+              aria-label={mounted && theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+              title={mounted && theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+            >
+              {mounted && theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+            </button>
 
             {isLoggedIn ? (
               <div className="flex items-center space-x-2">
@@ -95,8 +106,16 @@ export const Navbar: React.FC = () => {
           <div className="flex items-center space-x-2 lg:hidden">
             <LanguageToggle />
             <button
+              type="button"
+              onClick={toggleTheme}
+              className="p-2 text-agri-green-800 dark:text-amber-300 rounded-lg hover:bg-emerald-50 dark:hover:bg-slate-800 focus:outline-none"
+              aria-label={mounted && theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+            >
+              {mounted && theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+            </button>
+            <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 text-gray-700 rounded-lg hover:bg-gray-100 focus:outline-none"
+              className="p-2 text-gray-700 dark:text-slate-200 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800 focus:outline-none"
               aria-label="Toggle menu"
             >
               {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -107,7 +126,7 @@ export const Navbar: React.FC = () => {
 
       {/* Mobile Drawer Menu */}
       {mobileMenuOpen && (
-        <div className="lg:hidden border-b border-gray-200 bg-white px-4 pt-2 pb-4 space-y-2">
+        <div className="lg:hidden border-b border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-950 px-4 pt-2 pb-4 space-y-2">
           {navLinks.map((link) => {
             const Icon = link.icon;
             const isActive = pathname === link.href;
