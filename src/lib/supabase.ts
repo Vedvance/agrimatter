@@ -3,9 +3,80 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder-url.supabase.co';
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-anon-key';
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    persistSession: true,
+    autoRefreshToken: true,
+  }
+});
 
-// In-Memory / LocalStorage Mock Data Provider for standalone running without live Supabase
+export const isSupabaseConfigured = (): boolean => {
+  return Boolean(
+    process.env.NEXT_PUBLIC_SUPABASE_URL &&
+    !process.env.NEXT_PUBLIC_SUPABASE_URL.includes('placeholder') &&
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY &&
+    !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY.includes('placeholder')
+  );
+};
+
+// Profile Sync Helper
+export async function syncUserProfile(userProfile: {
+  id: string;
+  full_name: string;
+  phone?: string;
+  language?: string;
+  state?: string;
+  district?: string;
+  village?: string;
+}) {
+  if (!isSupabaseConfigured()) return null;
+
+  try {
+    const { data, error } = await supabase
+      .from('profiles')
+      .upsert(userProfile, { onConflict: 'id' })
+      .select()
+      .single();
+
+    if (error) {
+      console.warn("Supabase profile sync notice:", error.message);
+      return null;
+    }
+    return data;
+  } catch (err) {
+    console.error("Error syncing profile to Supabase:", err);
+    return null;
+  }
+}
+
+// Farm Sync Helper
+export async function syncUserFarm(farmData: {
+  user_id: string;
+  land_size: number;
+  irrigation_type: string;
+  soil_type: string;
+}) {
+  if (!isSupabaseConfigured()) return null;
+
+  try {
+    const { data, error } = await supabase
+      .from('farms')
+      .upsert(farmData, { onConflict: 'user_id' })
+      .select()
+      .single();
+
+    if (error) {
+      console.warn("Supabase farm sync notice:", error.message);
+      return null;
+    }
+    return data;
+  } catch (err) {
+    console.error("Error syncing farm to Supabase:", err);
+    return null;
+  }
+}
+
+// Fallback Mock Data Provider for standalone local testing
 export const MOCK_PROFILE = {
   id: 'demo-farmer-id',
   full_name: 'Ramesh Kumar',
