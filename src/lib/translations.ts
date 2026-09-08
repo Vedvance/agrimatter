@@ -1,0 +1,264 @@
+export const translations = {
+  en: {
+    appName: "Agrimatter",
+    tagline: "Smart Agricultural Decision Support for Indian Farmers",
+    nav: {
+      home: "Home",
+      dashboard: "Dashboard",
+      weather: "Weather",
+      cropAdvisor: "Crop Advisor",
+      soilHealth: "Soil Health",
+      fertilizerGuide: "Fertilizer Guide",
+      aiAssistant: "AI Assistant",
+      profile: "Profile",
+      admin: "Admin",
+      login: "Log In",
+      signup: "Sign Up",
+      onboarding: "Farm Setup",
+      logout: "Log Out"
+    },
+    hero: {
+      title: "Simple, Actionable Farming Advice directly for your land",
+      subtitle: "Tailored crop, weather, soil, and fertilizer recommendations for small & marginal farmers.",
+      getStarted: "Get Free Advice Now",
+      exploreFeatures: "Explore Features",
+      farmerGreeting: "Namaste, Ramesh ji"
+    },
+    features: {
+      weatherTitle: "Localized Weather Advisories",
+      weatherDesc: "Hourly and 7-day accurate forecasts with direct farming recommendations.",
+      cropTitle: "Crop Advisor",
+      cropDesc: "Find crops best suited for your soil type, season, and water availability.",
+      soilTitle: "Soil Health Index",
+      soilDesc: "Understand pH and NPK levels with organic improvement tips.",
+      fertilizerTitle: "Stage-Wise Fertilizer Guide",
+      fertilizerDesc: "General dosage guidance customized for your crop growth stage.",
+      aiTitle: "Smart Audio/Text AI Assistant",
+      aiDesc: "Ask any farming question in Hindi or English using voice or text."
+    },
+    howItWorks: {
+      title: "How Agrimatter Works",
+      step1: "1. Create Farm Profile",
+      step1Desc: "Enter your village, land size, irrigation type, and soil texture.",
+      step2: "2. Track Weather & Crops",
+      step2Desc: "Get real-time updates and rainfall alerts for your micro-region.",
+      step3: "3. Receive Decision Support",
+      step3Desc: "Get rule-based fertilizer, soil, and crop management advice.",
+      step4: "4. Increase Yield & Profit",
+      step4Desc: "Save input costs and make timely decisions during critical stages."
+    },
+    common: {
+      language: "Language",
+      english: "English",
+      hindi: "हिंदी",
+      save: "Save Details",
+      loading: "Loading information...",
+      error: "An error occurred. Please try again.",
+      empty: "No records found.",
+      disclaimerTitle: "Safety & Mandatory Disclaimer",
+      fertilizerDisclaimer: "This is general guidance. For exact fertilizer doses, consult a soil test report or local agriculture officer.",
+      quickActions: "Quick Actions",
+      location: "Location",
+      landSize: "Land Size",
+      irrigation: "Irrigation Type",
+      soilType: "Soil Type",
+      cropStage: "Crop Stage",
+      currentCrop: "Current Crop",
+      acres: "Acres",
+      viewDetails: "View Details",
+      askQuestion: "Ask a Question",
+      submit: "Submit"
+    },
+    dashboard: {
+      weatherAlertHeader: "Weather Alert",
+      sprayingAdvice: "Rain expected tomorrow. Avoid chemical spraying today.",
+      cropStatus: "Active Crop Overview",
+      soilHealthSummary: "Soil Health Overview",
+      fertilizerQuick: "Next Stage Fertilizer Action",
+      forecast7Days: "7-Day Forecast",
+      today: "Today"
+    },
+    weatherPage: {
+      title: "Detailed Weather & Advisory",
+      temp: "Temperature",
+      humidity: "Humidity",
+      wind: "Wind Speed",
+      rainProb: "Precipitation Chance",
+      hourlyTitle: "Hourly Forecast",
+      farmingActionTitle: "Farming Field Advice"
+    },
+    cropAdvisorPage: {
+      title: "Crop Suitability Recommendation",
+      subtitle: "Select your field conditions to find the best crop.",
+      seasonLabel: "Season",
+      recommendBtn: "Calculate Crop Suitability",
+      matchPercent: "Match Score",
+      suitable: "Recommended",
+      moderate: "Moderate Fit"
+    },
+    soilPage: {
+      title: "Soil Health & NPK Evaluation",
+      phLabel: "Soil pH Value (0 - 14)",
+      nitrogenLabel: "Nitrogen (N) - kg/ha",
+      phosphorusLabel: "Phosphorus (P) - kg/ha",
+      potassiumLabel: "Potassium (K) - kg/ha",
+      analyzeBtn: "Analyze Soil Health",
+      resultsTitle: "Soil Diagnosis & Guidance"
+    },
+    fertilizerPage: {
+      title: "Stage-Wise Fertilizer Guide",
+      selectCrop: "Select Crop",
+      selectStage: "Select Crop Growth Stage",
+      getGuideBtn: "Get Advisory",
+      basalAdvice: "Basal Application",
+      topDressing: "Top Dressing Advice"
+    },
+    aiPage: {
+      title: "Kisan AI Voice & Text Assistant",
+      subtitle: "Ask farming queries in English or हिंदी.",
+      placeholder: "Type your query or click mic...",
+      suggestedQueries: "Suggested Questions:",
+      listening: "Listening... speak now."
+    },
+    onboarding: {
+      welcome: "Welcome to Agrimatter",
+      subtitle: "Set up your farm profile for personalized recommendations.",
+      fullName: "Full Name",
+      phone: "Mobile Phone Number",
+      state: "State",
+      district: "District",
+      village: "Village / Town"
+    }
+  },
+  hi: {
+    appName: "एग्रीमैटर (Agrimatter)",
+    tagline: "भारतीय किसानों के लिए स्मार्ट कृषि सलाह ऐप",
+    nav: {
+      home: "मुख्य पृष्ठ",
+      dashboard: "डैशबोर्ड",
+      weather: "मौसम",
+      cropAdvisor: "फसल सलाहकार",
+      soilHealth: "मिट्टी स्वास्थ्य",
+      fertilizerGuide: "खाद/उर्वरक मार्गदर्शिका",
+      aiAssistant: "एआई सहायक (AI Assistant)",
+      profile: "प्रोफाइल",
+      admin: "एडमिन",
+      login: "लॉग इन",
+      signup: "साइन अप",
+      onboarding: "फार्म सेटअप",
+      logout: "लॉग आउट"
+    },
+    hero: {
+      title: "आपकी जमीन के लिए सटीक और सरल कृषि सलाह",
+      subtitle: "छोटे और सीमांत किसानों के लिए मौसम, मिट्टी, और फसल चरण के आधार पर त्वरित निर्णय सहायता।",
+      getStarted: "मुफ्त सलाह प्राप्त करें",
+      exploreFeatures: "सुविधाएं देखें",
+      farmerGreeting: "नमस्ते, रमेश जी"
+    },
+    features: {
+      weatherTitle: "स्थानीय मौसम सलाह",
+      weatherDesc: "प्रति घंटा और 7-दिवसीय मौसम पूर्वानुमान और सीधी खेती संबंधी सलाह।",
+      cropTitle: "फसल चयन सलाहकार",
+      cropDesc: "आपकी मिट्टी, मौसम और पानी की उपलब्धता के लिए सबसे उपयुक्त फसल चुनें।",
+      soilTitle: "मिट्टी स्वास्थ्य सूचकांक",
+      soilDesc: "pH और NPK (नाइट्रोजन, फास्फोरस, पोटाश) स्तर की सरल व्याख्या।",
+      fertilizerTitle: "फसल चरण अनुसार उर्वरक गाइड",
+      fertilizerDesc: "फसल की वृद्धि के अनुसार सही समय पर खाद की सामान्य सलाह।",
+      aiTitle: "हिंदी/अंग्रेजी एआई सहायक",
+      aiDesc: "बोलकर या लिखकर खेती से जुड़ा कोई भी सवाल पूछें।"
+    },
+    howItWorks: {
+      title: "एग्रीमैटर कैसे काम करता है",
+      step1: "1. खेत की जानकारी भरें",
+      step1Desc: "अपना गांव, जमीन का आकार, सिंचाई का साधन और मिट्टी का प्रकार चुनें।",
+      step2: "2. मौसम और फसल ट्रैक करें",
+      step2Desc: "अपने क्षेत्र के लिए रीयल-टाइम मौसम और बारिश के अलर्ट पाएं।",
+      step3: "3. सही सलाह पाएं",
+      step3Desc: "नियम-आधारित उर्वरक, मिट्टी और फसल प्रबंधन संबंधी सलाह प्राप्त करें।",
+      step4: "4. पैदावार और मुनाफा बढ़ाएं",
+      step4Desc: "समय पर सही निर्णय लेकर लागत घटाएं और बेहतर फसल पाएं।"
+    },
+    common: {
+      language: "भाषा",
+      english: "English",
+      hindi: "हिंदी",
+      save: "विवरण सुरक्षित करें",
+      loading: "जानकारी लोड हो रही है...",
+      error: "कोई त्रुटि हुई। कृपया पुनः प्रयास करें।",
+      empty: "कोई रिकॉर्ड नहीं मिला।",
+      disclaimerTitle: "सुरक्षा एवं अनिवार्य अस्वीकरण",
+      fertilizerDisclaimer: "यह सामान्य मार्गदर्शन है। खाद की सटीक मात्रा के लिए मिट्टी परीक्षण रिपोर्ट या स्थानीय कृषि अधिकारी से संपर्क करें।",
+      quickActions: "त्वरित कार्य",
+      location: "स्थान",
+      landSize: "जमीन का आकार",
+      irrigation: "सिंचाई का साधन",
+      soilType: "मिट्टी का प्रकार",
+      cropStage: "फसल का चरण",
+      currentCrop: "वर्तमान फसल",
+      acres: "एकड़",
+      viewDetails: "विवरण देखें",
+      askQuestion: "सवाल पूछें",
+      submit: "सबमिट करें"
+    },
+    dashboard: {
+      weatherAlertHeader: "मौसम चेतावनी",
+      sprayingAdvice: "कल बारिश की संभावना है। आज छिड़काव टालें।",
+      cropStatus: "आपकी फसल की स्थिति",
+      soilHealthSummary: "मिट्टी स्वास्थ्य की स्थिति",
+      fertilizerQuick: "अगला उर्वरक चरण",
+      forecast7Days: "7-दिवसीय मौसम पूर्वानुमान",
+      today: "आज"
+    },
+    weatherPage: {
+      title: "विस्तृत मौसम एवं कृषि सलाह",
+      temp: "तापमान",
+      humidity: "नमी (Humidity)",
+      wind: "हवा की गति",
+      rainProb: "बारिश की संभावना",
+      hourlyTitle: "प्रति घंटे का पूर्वानुमान",
+      farmingActionTitle: "खेत की सलाह"
+    },
+    cropAdvisorPage: {
+      title: "फसल अनुकूलता सिफारिश",
+      subtitle: "अपने खेत की स्थिति चुनकर सबसे उपयुक्त फसल जानें।",
+      seasonLabel: "मौसम",
+      recommendBtn: "फसल अनुकूलता की जाँच करें",
+      matchPercent: "अनुकूलता स्कोर",
+      suitable: "अनुशंसित",
+      moderate: "मध्यम"
+    },
+    soilPage: {
+      title: "मिट्टी स्वास्थ्य एवं NPK जाँच",
+      phLabel: "मिट्टी pH मान (0 - 14)",
+      nitrogenLabel: "नाइट्रोजन (N) - किग्रा/हेक्टेयर",
+      phosphorusLabel: "फास्फोरस (P) - किग्रा/हेक्टेयर",
+      potassiumLabel: "पोटाश (K) - किग्रा/हेक्टेयर",
+      analyzeBtn: "मिट्टी स्वास्थ्य का विश्लेषण करें",
+      resultsTitle: "मिट्टी रिपोर्ट एवं सलाह"
+    },
+    fertilizerPage: {
+      title: "फसल चरण अनुसार खाद/उर्वरक मार्गदर्शिका",
+      selectCrop: "फसल चुनें",
+      selectStage: "फसल का चरण चुनें",
+      getGuideBtn: "सलाह प्राप्त करें",
+      basalAdvice: "बुवाई के समय (बेसल खुराक)",
+      topDressing: "टॉप ड्रेसिंग (छिड़काव) सलाह"
+    },
+    aiPage: {
+      title: "किसान एआई (Kisan AI) आवाज़ एवं टेक्स्ट सहायक",
+      subtitle: "हिंदी या अंग्रेजी में खेती का कोई भी सवाल पूछें।",
+      placeholder: "अपना सवाल लिखें या माइक पर क्लिक करें...",
+      suggestedQueries: "सुझाए गए प्रश्न:",
+      listening: "सुन रहे हैं... कृपया बोलें।"
+    },
+    onboarding: {
+      welcome: "एग्रीमैटर में आपका स्वागत है",
+      subtitle: "सटीक सलाह पाने के लिए अपने खेत का विवरण भरें।",
+      fullName: "पूरा नाम",
+      phone: "मोबाइल नंबर",
+      state: "राज्य",
+      district: "ज़िला",
+      village: "गाँव / कस्बा"
+    }
+  }
+};
