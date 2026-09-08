@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useLanguage } from '@/context/LanguageContext';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -19,6 +19,7 @@ export default function AIAssistantPage() {
   const [inputQuery, setInputQuery] = useState('');
   const [isListening, setIsListening] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
+  const recognitionRef = useRef<any>(null);
 
   const suggestedQuestions = language === 'hi' ? [
     "गेहूँ में पीला रतुआ का इलाज क्या है?",
@@ -39,9 +40,17 @@ export default function AIAssistantPage() {
       text: language === 'hi'
         ? "नमस्ते! मैं आपका एग्रीमैटर किसान सहायक हूँ। आप हिंदी या अंग्रेजी में खेती, मौसम या बीमारी से जुड़ा कोई भी सवाल पूछ सकते हैं।"
         : "Namaste! I am your Agrimatter Kisan AI Assistant. Ask any question regarding crops, weather, soil, or pest control.",
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      timestamp: '--:--'
     }
   ]);
+
+  useEffect(() => {
+    setMessages((prev) => prev.map((message) => (
+      message.id === '1' && message.timestamp === '--:--'
+        ? { ...message, timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }
+        : message
+    )));
+  }, []);
 
   const handleSend = async (textToSend?: string) => {
     const query = textToSend || inputQuery;
@@ -77,6 +86,13 @@ export default function AIAssistantPage() {
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       };
       setMessages((prev) => [...prev, botMsg]);
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(data.answer);
+        utterance.lang = language === 'hi' ? 'hi-IN' : 'en-IN';
+        utterance.rate = 0.95;
+        window.speechSynthesis.speak(utterance);
+      }
     } catch {
       const botMsg: ChatMessage = {
         id: (Date.now() + 1).toString(),
@@ -93,20 +109,46 @@ export default function AIAssistantPage() {
   };
 
   const toggleMic = () => {
-    if (!isListening) {
-      setIsListening(true);
-      // Simulate voice speech recognition filling text
-      setTimeout(() => {
-        const sampleVoice = language === 'hi' 
-          ? "गेहूँ में पीला रतुआ का इलाज?" 
-          : "How to prepare soil for Rice?";
-        setInputQuery(sampleVoice);
-        setIsListening(false);
-      }, 2500);
-    } else {
+    if (isListening) {
+      recognitionRef.current?.stop();
       setIsListening(false);
+      return;
     }
+
+    const recognitionConstructor = typeof window !== 'undefined'
+      ? (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
+      : null;
+
+    if (!recognitionConstructor) {
+      setInputQuery(language === 'hi'
+        ? 'इस ब्राउज़र में voice input उपलब्ध नहीं है। कृपया अपना सवाल लिखें।'
+        : 'Voice input is not supported in this browser. Please type your question.');
+      return;
+    }
+
+    const recognition = new recognitionConstructor();
+    recognition.lang = language === 'hi' ? 'hi-IN' : 'en-IN';
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+    recognition.onstart = () => setIsListening(true);
+    recognition.onresult = (event: any) => {
+      const spokenQuery = event.results?.[0]?.[0]?.transcript?.trim();
+      setIsListening(false);
+      if (spokenQuery) {
+        setInputQuery(spokenQuery);
+        void handleSend(spokenQuery);
+      }
+    };
+    recognition.onerror = () => setIsListening(false);
+    recognition.onend = () => setIsListening(false);
+    recognitionRef.current = recognition;
+    recognition.start();
   };
+
+  useEffect(() => () => {
+    recognitionRef.current?.stop();
+    window.speechSynthesis?.cancel();
+  }, []);
 
   return (
     <div className="max-w-3xl mx-auto space-y-4 py-2">

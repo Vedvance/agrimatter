@@ -1,38 +1,69 @@
 import { WeatherForecast } from '@/types';
+import { fetchWeatherApi } from 'openmeteo';
 
 export async function fetchWeatherData(lat: number = 30.9010, lng: number = 75.8573): Promise<WeatherForecast> {
   try {
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current_weather=true&hourly=temperature_2m,relativehumidity_2m,precipitation_probability,weathercode&daily=weathercode,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=Asia%2FKolkata`;
-    
-    const response = await fetch(url, { cache: 'no-store' });
-    if (!response.ok) {
-      throw new Error(`Weather API returned ${response.status}`);
-    }
-    const data = await response.json();
+    const responses = await fetchWeatherApi('https://api.open-meteo.com/v1/forecast', {
+      latitude: lat,
+      longitude: lng,
+      timezone: 'auto',
+      forecast_days: 7,
+      current: [
+        'temperature_2m',
+        'precipitation',
+        'weather_code',
+        'wind_speed_10m',
+        'relative_humidity_2m'
+      ],
+      hourly: ['temperature_2m', 'precipitation_probability', 'weather_code'],
+      daily: ['weather_code', 'temperature_2m_max', 'temperature_2m_min', 'precipitation_probability_max']
+    }, 2, 0.2, 2, { cache: 'no-store' });
 
-    const currentWeather = data.current_weather || {};
-    const daily = data.daily || {};
-    const hourly = data.hourly || {};
+    const response = responses[0];
+    if (!response) throw new Error('Open-Meteo returned no weather locations');
+
+    const current = response.current();
+    const hourly = response.hourly();
+    const daily = response.daily();
+    if (!current || !hourly || !daily) throw new Error('Open-Meteo returned incomplete weather data');
+
+    const currentTemperature = current.variables(0)?.value() ?? 30;
+    const currentPrecipitation = current.variables(1)?.value() ?? 0;
+    const currentCode = current.variables(2)?.value() ?? 0;
+    const currentWindSpeed = current.variables(3)?.value() ?? 12;
+    const currentHumidity = current.variables(4)?.value() ?? 68;
+    const hourlyTimes = Array.from(
+      { length: (Number(hourly.timeEnd()) - Number(hourly.time())) / hourly.interval() },
+      (_, index) => new Date((Number(hourly.time()) + index * hourly.interval()) * 1000)
+    );
+    const hourlyTemperatures = hourly.variables(0)?.valuesArray() ?? [];
+    const hourlyPrecipitation = hourly.variables(1)?.valuesArray() ?? [];
+    const dailyTimes = Array.from(
+      { length: (Number(daily.timeEnd()) - Number(daily.time())) / daily.interval() },
+      (_, index) => new Date((Number(daily.time()) + index * daily.interval()) * 1000)
+    );
+    const dailyCodes = daily.variables(0)?.valuesArray() ?? [];
+    const dailyMax = daily.variables(1)?.valuesArray() ?? [];
+    const dailyMin = daily.variables(2)?.valuesArray() ?? [];
+    const dailyPrecipitation = daily.variables(3)?.valuesArray() ?? [];
 
     const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-    const dailyForecast = (daily.time || []).slice(0, 7).map((timeStr: string, idx: number) => {
-      const dateObj = new Date(timeStr);
+    const dailyForecast = dailyTimes.slice(0, 7).map((dateObj, idx) => {
       return {
-        date: timeStr,
+        date: dateObj.toISOString().slice(0, 10),
         dayName: idx === 0 ? 'Today' : days[dateObj.getDay()],
-        tempMax: Math.round(daily.temperature_2m_max?.[idx] ?? 32),
-        tempMin: Math.round(daily.temperature_2m_min?.[idx] ?? 22),
-        precipitationProb: daily.precipitation_probability_max?.[idx] ?? (idx === 1 ? 75 : 15),
-        condition: getWeatherConditionText(daily.weathercode?.[idx] ?? 0)
+        tempMax: Math.round(dailyMax[idx] ?? 32),
+        tempMin: Math.round(dailyMin[idx] ?? 22),
+        precipitationProb: dailyPrecipitation[idx] ?? 15,
+        condition: getWeatherConditionText(dailyCodes[idx] ?? 0)
       };
     });
 
-    const hourlyForecast = (hourly.time || []).slice(0, 8).map((timeStr: string, idx: number) => {
-      const hour = new Date(timeStr).getHours();
+    const hourlyForecast = hourlyTimes.slice(0, 8).map((dateObj, idx) => {
       return {
-        time: `${hour}:00`,
-        temp: Math.round(hourly.temperature_2m?.[idx] ?? 28),
-        precipitationProb: hourly.precipitation_probability?.[idx] ?? 10
+        time: dateObj.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: false }),
+        temp: Math.round(hourlyTemperatures[idx] ?? 28),
+        precipitationProb: hourlyPrecipitation[idx] ?? 10
       };
     });
 
@@ -41,12 +72,12 @@ export async function fetchWeatherData(lat: number = 30.9010, lng: number = 75.8
     return {
       location: "Punjab, India",
       current: {
-        temp: Math.round(currentWeather.temperature ?? 30),
-        humidity: 68,
-        windSpeed: Math.round(currentWeather.windspeed ?? 12),
-        precipitation: isRainySoon ? 15 : 0,
-        condition: getWeatherConditionText(currentWeather.weathercode ?? 0),
-        conditionCode: currentWeather.weathercode ?? 0,
+        temp: Math.round(currentTemperature),
+        humidity: Math.round(currentHumidity),
+        windSpeed: Math.round(currentWindSpeed),
+        precipitation: Math.round(currentPrecipitation),
+        condition: getWeatherConditionText(currentCode),
+        conditionCode: currentCode,
         icon: isRainySoon ? "CloudRain" : "Sun"
       },
       daily: dailyForecast.length > 0 ? dailyForecast : getFallbackDaily(),

@@ -109,70 +109,84 @@ export const VoiceAssistant = ({ isOpen, onClose, setActiveTab }) => {
 
   return (
     <div className="fixed inset-0 z-50 bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="bg-white rounded-3xl max-w-md w-full p-6 sm:p-7 shadow-2xl relative animate-in fade-in zoom-in duration-150">
+      <div className="bg-white rounded-[2rem] max-w-lg w-full overflow-hidden shadow-2xl relative animate-in fade-in zoom-in duration-150 border border-white/20">
+        <div className="h-1.5 bg-gradient-to-r from-amber-400 via-orange-500 to-emerald-500" />
+        <div className="p-6 sm:p-8">
         <button
           onClick={onClose}
-          className="absolute top-5 right-5 text-slate-400 hover:text-slate-700 p-1 rounded-full hover:bg-slate-100"
+          type="button"
+          aria-label="Close voice assistant"
+          className="absolute top-6 right-6 text-slate-400 hover:text-slate-700 p-2 rounded-xl hover:bg-slate-100 transition-colors"
         >
           <X className="w-5 h-5" />
         </button>
 
         {/* Modal Header */}
-        <div className="text-center mb-6">
-          <div className="inline-flex items-center gap-1.5 bg-amber-50 text-amber-900 border border-amber-200 px-3 py-1 rounded-full text-xs font-bold mb-3">
+        <div className="text-center mb-7">
+          <div className="inline-flex items-center gap-2 bg-amber-50 text-amber-900 border border-amber-200 px-3 py-1.5 rounded-full text-[11px] font-extrabold mb-4 uppercase tracking-wide">
             <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-            <span>AI Krishi Mitra • Voice Assistant</span>
+            <span>AI Krishi Mitra <span className="text-amber-400 mx-1">•</span> Voice Assistant</span>
           </div>
 
-          <h3 className="text-xl font-black text-slate-900">
+          <h3 className="text-2xl font-black tracking-tight text-slate-900">
             {lang === 'hi' ? 'अपनी भाषा में बोलें' : 'Speak to AgriMatter'}
           </h3>
-          <p className="text-xs text-slate-500 mt-1">
+          <p className="text-sm text-slate-500 mt-2 max-w-xs mx-auto leading-relaxed">
             {lang === 'hi' ? 'हिंदी या अंग्रेजी में प्रश्न पूछें' : 'Ask in Hindi or English hands-free'}
           </p>
         </div>
 
         {/* Animated Mic Button */}
-        <div className="flex flex-col items-center justify-center my-6">
+        <div className="flex flex-col items-center justify-center mb-7">
           <button
+            type="button"
             onClick={startListening}
-            className={`relative w-24 h-24 rounded-full flex items-center justify-center transition shadow-xl ${
+            aria-label={listening ? 'Listening' : 'Start voice input'}
+            className={`relative w-28 h-28 rounded-full flex items-center justify-center transition-all duration-300 shadow-xl ${
               listening 
-                ? 'bg-rose-500 text-white animate-pulse ring-8 ring-rose-200' 
+                ? 'bg-rose-500 text-white ring-8 ring-rose-100' 
                 : 'bg-gradient-to-tr from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white hover:scale-105'
             }`}
           >
+            <span className={`absolute inset-0 rounded-full border-2 border-white/40 ${listening ? 'animate-ping' : ''}`} />
             <Mic className="w-10 h-10" />
             {listening && (
-              <span className="absolute -bottom-7 text-xs font-black text-rose-600 tracking-wider uppercase">
-                Listening...
-              </span>
+              <span className="absolute -bottom-8 text-[11px] font-black text-rose-600 tracking-widest uppercase">Listening...</span>
             )}
           </button>
           {!listening && (
-            <span className="text-xs font-semibold text-slate-500 mt-4">
+            <span className="text-xs font-bold text-slate-500 mt-5">
               {lang === 'hi' ? 'माइक पर टैप करके बोलें' : 'Tap to start speaking'}
             </span>
           )}
+          <div className="h-5 flex items-end justify-center gap-1 mt-4" aria-hidden="true">
+            {[10, 16, 24, 14, 20, 12, 18].map((height, index) => (
+              <span
+                key={index}
+                className={`w-1 rounded-full bg-gradient-to-t from-amber-500 to-orange-400 ${listening ? 'animate-pulse' : 'opacity-40'}`}
+                style={{ height: `${height}px`, animationDelay: `${index * 80}ms` }}
+              />
+            ))}
+          </div>
         </div>
 
         {/* Transcript & AI Response */}
         {(transcript || aiReply) && (
-          <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200 text-xs mb-5 space-y-2">
+          <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200 text-xs mb-6 space-y-3">
             {transcript && (
-              <div>
-                <span className="text-slate-400 font-bold block text-[10px] uppercase tracking-wider">
+              <div className="bg-white rounded-xl p-3 border border-slate-200">
+                <span className="text-slate-400 font-extrabold block text-[10px] uppercase tracking-wider mb-1">
                   You Said:
                 </span>
                 <p className="font-semibold text-slate-800 italic">"{transcript}"</p>
               </div>
             )}
             {aiReply && (
-              <div className="pt-2 border-t border-slate-200/60">
-                <span className="text-emerald-600 font-bold block text-[10px] uppercase tracking-wider">
+              <div className="bg-emerald-50 rounded-xl p-3 border border-emerald-200">
+                <span className="text-emerald-700 font-extrabold block text-[10px] uppercase tracking-wider mb-1">
                   AgriMatter AI:
                 </span>
-                <p className="font-bold text-slate-900">{aiReply}</p>
+                <p className="font-bold text-emerald-950 leading-relaxed">{aiReply}</p>
               </div>
             )}
           </div>
@@ -180,10 +194,10 @@ export const VoiceAssistant = ({ isOpen, onClose, setActiveTab }) => {
 
         {/* 1-Click Sample Questions (Essential for SIH Judges Demonstration) */}
         <div>
-          <span className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-2">
+          <span className="text-[11px] font-extrabold text-slate-500 uppercase tracking-wider block mb-3">
             {lang === 'hi' ? 'सुझाए गए प्रश्न (1-क्लिक टेस्ट):' : 'Or Click a Voice Query to Test:'}
           </span>
-          <div className="space-y-1.5 max-h-48 overflow-y-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-52 overflow-y-auto pr-1">
             {sampleVoiceQueries.map((q, idx) => (
               <button
                 key={idx}
@@ -193,7 +207,7 @@ export const VoiceAssistant = ({ isOpen, onClose, setActiveTab }) => {
                   q.replyEn,
                   q.replyHi
                 )}
-                className="w-full text-left p-2.5 rounded-xl border border-slate-200 hover:border-amber-400 hover:bg-amber-50/50 text-xs text-slate-700 font-semibold transition flex items-center justify-between group"
+                className="w-full text-left p-3 rounded-xl border border-slate-200 hover:border-amber-400 hover:bg-amber-50/70 hover:-translate-y-0.5 text-xs text-slate-700 font-semibold transition-all flex items-center justify-between group"
               >
                 <span className="group-hover:text-amber-900 truncate">
                   "{lang === 'hi' ? q.textHi : q.textEn}"
@@ -202,6 +216,7 @@ export const VoiceAssistant = ({ isOpen, onClose, setActiveTab }) => {
               </button>
             ))}
           </div>
+        </div>
         </div>
       </div>
     </div>
