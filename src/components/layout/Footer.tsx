@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { useLanguage } from '@/context/LanguageContext';
-import { Sprout, PhoneCall, Shield, HelpCircle } from 'lucide-react';
+import { PhoneCall, Shield, HelpCircle } from 'lucide-react';
 
 export const Footer: React.FC = () => {
   const { t } = useLanguage();
@@ -13,19 +13,23 @@ export const Footer: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           
-          {/* Col 1 */}
+          {/* Col 1 - Logo & Tagline */}
           <div className="space-y-3">
             <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 rounded-lg bg-agri-green-500 flex items-center justify-center text-white font-bold">
-                <Sprout className="w-5 h-5" />
+              <div className="w-10 h-10 rounded-xl bg-white p-0.5 border border-emerald-400 overflow-hidden flex items-center justify-center">
+                <img 
+                  src="/agrimatter-logo.jpg" 
+                  alt="AgriMatter Logo" 
+                  className="w-full h-full object-contain"
+                />
               </div>
-              <span className="text-xl font-black text-white">Agrimatter</span>
+              <span className="text-xl font-black text-white tracking-tight">AgriMatter</span>
             </div>
             <p className="text-xs text-amber-100/80 leading-relaxed">
               {t.tagline}
             </p>
             <p className="text-[11px] text-emerald-300 font-medium">
-              Empowering Small & Marginal Farmers in India with Rule-Based Agronomy & Weather Intelligence.
+              Smarter Farming. Brighter Tomorrow. Empowering Small & Marginal Farmers in India.
             </p>
           </div>
 
@@ -71,7 +75,7 @@ export const Footer: React.FC = () => {
         </div>
 
         <div className="border-t border-amber-900/60 pt-6 flex flex-col sm:flex-row justify-between items-center text-xs text-amber-200/60">
-          <p>© {new Date().getFullYear()} Agrimatter Decision Support System. Built with Next.js, Tailwind & Supabase.</p>
+          <p>© {new Date().getFullYear()} AgriMatter Decision Support System. Smarter Farming. Brighter Tomorrow.</p>
           <div className="flex space-x-4 mt-2 sm:mt-0">
             <Link href="/terms" className="hover:underline">Terms</Link>
             <Link href="/privacy" className="hover:underline">Privacy</Link>

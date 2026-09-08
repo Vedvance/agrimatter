@@ -8,7 +8,7 @@ import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Alert } from '@/components/ui/Alert';
-import { Phone, Mail, Lock, KeyRound, Sprout, ArrowRight, ShieldCheck, RefreshCw, Database } from 'lucide-react';
+import { Phone, Mail, Lock, KeyRound, ArrowRight, ShieldCheck, RefreshCw, Database } from 'lucide-react';
 
 export default function LoginPage() {
   const { t, language } = useLanguage();
@@ -31,7 +31,6 @@ export default function LoginPage() {
   const [statusMsg, setStatusMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [loading, setLoading] = useState(false);
 
-  // Countdown timer for OTP
   useEffect(() => {
     let interval: any = null;
     if (step === 'otp' && timer > 0) {
@@ -106,13 +105,17 @@ export default function LoginPage() {
   return (
     <div className="max-w-md mx-auto py-10 space-y-6">
       
-      {/* Header */}
+      {/* Header with Official Logo */}
       <div className="text-center space-y-2">
-        <div className="w-12 h-12 rounded-2xl bg-agri-green-700 mx-auto flex items-center justify-center text-white font-black shadow-md">
-          <Sprout className="w-7 h-7" />
+        <div className="w-16 h-16 rounded-2xl bg-white p-1 border border-emerald-300 mx-auto shadow-md flex items-center justify-center">
+          <img 
+            src="/agrimatter-logo.jpg" 
+            alt="AgriMatter Logo" 
+            className="w-full h-full object-contain"
+          />
         </div>
         <h1 className="text-2xl font-black text-agri-green-900">
-          {language === 'hi' ? 'किसान खाता लॉग इन' : 'Farmer Supabase Auth Login'}
+          {language === 'hi' ? 'किसान खाता लॉग इन' : 'Farmer Auth Login'}
         </h1>
         <p className="text-xs text-gray-600 font-semibold">
           {language === 'hi' ? 'मोबाइल नंबर ओटीपी या ईमेल द्वारा लॉग इन करें' : 'Authenticate via Mobile Phone OTP or Supabase Email & Password'}
@@ -163,7 +166,6 @@ export default function LoginPage() {
           </Alert>
         )}
 
-        {/* Tab 1: Phone OTP Flow */}
         {authTab === 'phone' && (
           step === 'phone' ? (
             <form onSubmit={handleSendOtp} className="space-y-4">
@@ -253,7 +255,6 @@ export default function LoginPage() {
           )
         )}
 
-        {/* Tab 2: Email & Password Flow */}
         {authTab === 'email' && (
           <form onSubmit={handleEmailLogin} className="space-y-4">
             <div>

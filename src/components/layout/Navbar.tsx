@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useLanguage } from '@/context/LanguageContext';
 import { useAuth } from '@/context/AuthContext';
@@ -29,14 +30,18 @@ export const Navbar: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           
-          {/* Brand Logo */}
-          <Link href="/" className="flex items-center space-x-2">
-            <div className="w-10 h-10 rounded-xl bg-agri-green-700 flex items-center justify-center text-white font-black shadow-md">
-              <Sprout className="w-6 h-6" />
+          {/* Brand Logo with Official AgriMatter Logo Image */}
+          <Link href="/" className="flex items-center space-x-2 py-1">
+            <div className="relative w-10 h-10 overflow-hidden rounded-xl bg-white border border-emerald-200 shadow-sm flex items-center justify-center p-0.5">
+              <img 
+                src="/agrimatter-logo.jpg" 
+                alt="AgriMatter Logo" 
+                className="w-full h-full object-contain"
+              />
             </div>
             <div>
-              <span className="text-xl font-black text-agri-green-900 tracking-tight">Agrimatter</span>
-              <span className="block text-[10px] font-bold text-agri-brown-700 uppercase tracking-wider">Kisan Mitra</span>
+              <span className="text-xl font-black text-agri-green-900 tracking-tight leading-none">AgriMatter</span>
+              <span className="block text-[9px] font-bold text-agri-brown-700 uppercase tracking-wider mt-0.5">SMARTER FARMING</span>
             </div>
           </Link>
 
