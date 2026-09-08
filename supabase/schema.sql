@@ -1,4 +1,4 @@
--- Agrimatter Database Schema with Row Level Security (RLS) & Seed Data
+-- Agrimatter Supabase Schema with Safe Re-run Policies & Seed Data
 
 -- 1. Profiles Table
 CREATE TABLE IF NOT EXISTS public.profiles (
@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS public.profiles (
 CREATE TABLE IF NOT EXISTS public.farms (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
-    land_size NUMERIC(6, 2) NOT NULL DEFAULT 1.0, -- in acres
+    land_size NUMERIC(6, 2) NOT NULL DEFAULT 1.0,
     irrigation_type TEXT NOT NULL CHECK (irrigation_type IN ('Rainfed', 'Borewell', 'Canal', 'Drip', 'Sprinkler')),
     latitude NUMERIC(9, 6) DEFAULT 28.6139,
     longitude NUMERIC(9, 6) DEFAULT 77.2090,
@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS public.farms (
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 3. Crops Table (Global Master List)
+-- 3. Crops Table
 CREATE TABLE IF NOT EXISTS public.crops (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name TEXT NOT NULL UNIQUE,
@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS public.crops (
     description TEXT
 );
 
--- 4. Farmer Crops (Track user's active crops)
+-- 4. Farmer Crops Table
 CREATE TABLE IF NOT EXISTS public.farmer_crops (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     farm_id UUID NOT NULL REFERENCES public.farms(id) ON DELETE CASCADE,
@@ -50,14 +50,14 @@ CREATE TABLE IF NOT EXISTS public.soil_reports (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     farm_id UUID NOT NULL REFERENCES public.farms(id) ON DELETE CASCADE,
     ph NUMERIC(4, 2) CHECK (ph >= 0 AND ph <= 14),
-    nitrogen NUMERIC(6, 2),   -- N in kg/ha or ppm
-    phosphorus NUMERIC(6, 2), -- P in kg/ha or ppm
-    potassium NUMERIC(6, 2),  -- K in kg/ha or ppm
+    nitrogen NUMERIC(6, 2),
+    phosphorus NUMERIC(6, 2),
+    potassium NUMERIC(6, 2),
     report_date DATE DEFAULT CURRENT_DATE,
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 6. Crop Advisories Table (Master Knowledge Base)
+-- 6. Crop Advisories Table
 CREATE TABLE IF NOT EXISTS public.crop_advisories (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     crop_id UUID NOT NULL REFERENCES public.crops(id) ON DELETE CASCADE,
@@ -87,7 +87,7 @@ CREATE TABLE IF NOT EXISTS public.assistant_conversations (
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Enable Row Level Security (RLS) on all user-facing tables
+-- Enable RLS
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.farms ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.crops ENABLE ROW LEVEL SECURITY;
@@ -97,37 +97,31 @@ ALTER TABLE public.crop_advisories ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.weather_alerts ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.assistant_conversations ENABLE ROW LEVEL SECURITY;
 
--- RLS Policies: Profiles
+-- Drop Existing Policies to allow idempotent re-execution
+DROP POLICY IF EXISTS "Users can view own profile" ON public.profiles;
+DROP POLICY IF EXISTS "Users can update own profile" ON public.profiles;
+DROP POLICY IF EXISTS "Users can insert own profile" ON public.profiles;
+DROP POLICY IF EXISTS "Farmers can view own farms" ON public.farms;
+DROP POLICY IF EXISTS "Farmers can manage own farms" ON public.farms;
+DROP POLICY IF EXISTS "Anyone can view global crops list" ON public.crops;
+DROP POLICY IF EXISTS "Farmers can access own crop records" ON public.farmer_crops;
+DROP POLICY IF EXISTS "Farmers can access own soil reports" ON public.soil_reports;
+DROP POLICY IF EXISTS "Anyone can view crop advisories" ON public.crop_advisories;
+DROP POLICY IF EXISTS "Farmers can view own weather alerts" ON public.weather_alerts;
+DROP POLICY IF EXISTS "Farmers can access own assistant conversations" ON public.assistant_conversations;
+
+-- Re-create Policies
 CREATE POLICY "Users can view own profile" ON public.profiles FOR SELECT USING (auth.uid() = id);
 CREATE POLICY "Users can update own profile" ON public.profiles FOR UPDATE USING (auth.uid() = id);
 CREATE POLICY "Users can insert own profile" ON public.profiles FOR INSERT WITH CHECK (auth.uid() = id);
-
--- RLS Policies: Farms
 CREATE POLICY "Farmers can view own farms" ON public.farms FOR SELECT USING (auth.uid() = user_id);
 CREATE POLICY "Farmers can manage own farms" ON public.farms FOR ALL USING (auth.uid() = user_id);
-
--- RLS Policies: Crops (Public read access)
 CREATE POLICY "Anyone can view global crops list" ON public.crops FOR SELECT USING (true);
-
--- RLS Policies: Farmer Crops
-CREATE POLICY "Farmers can access own crop records" ON public.farmer_crops FOR ALL 
-USING (farm_id IN (SELECT id FROM public.farms WHERE user_id = auth.uid()));
-
--- RLS Policies: Soil Reports
-CREATE POLICY "Farmers can access own soil reports" ON public.soil_reports FOR ALL 
-USING (farm_id IN (SELECT id FROM public.farms WHERE user_id = auth.uid()));
-
--- RLS Policies: Crop Advisories (Public read access)
+CREATE POLICY "Farmers can access own crop records" ON public.farmer_crops FOR ALL USING (farm_id IN (SELECT id FROM public.farms WHERE user_id = auth.uid()));
+CREATE POLICY "Farmers can access own soil reports" ON public.soil_reports FOR ALL USING (farm_id IN (SELECT id FROM public.farms WHERE user_id = auth.uid()));
 CREATE POLICY "Anyone can view crop advisories" ON public.crop_advisories FOR SELECT USING (true);
-
--- RLS Policies: Weather Alerts
-CREATE POLICY "Farmers can view own weather alerts" ON public.weather_alerts FOR ALL 
-USING (farm_id IN (SELECT id FROM public.farms WHERE user_id = auth.uid()));
-
--- RLS Policies: Assistant Conversations
-CREATE POLICY "Farmers can access own assistant conversations" ON public.assistant_conversations FOR ALL 
-USING (auth.uid() = user_id);
-
+CREATE POLICY "Farmers can view own weather alerts" ON public.weather_alerts FOR ALL USING (farm_id IN (SELECT id FROM public.farms WHERE user_id = auth.uid()));
+CREATE POLICY "Farmers can access own assistant conversations" ON public.assistant_conversations FOR ALL USING (auth.uid() = user_id);
 
 -- Seed Data for Crops
 INSERT INTO public.crops (name, season, suitable_soils, irrigation_need, sowing_months, description) VALUES
@@ -138,16 +132,3 @@ INSERT INTO public.crops (name, season, suitable_soils, irrigation_need, sowing_
 ('Soybean', 'Kharif', ARRAY['Black', 'Loam'], 'Medium', ARRAY['June', 'July'], 'Rich protein oilseed suited for heavy black soils of central India.'),
 ('Tomato', 'All-season', ARRAY['Loam', 'Red', 'Black'], 'High', ARRAY['August', 'September', 'January'], 'Popular commercial vegetable crop grown under drip irrigation.')
 ON CONFLICT (name) DO NOTHING;
-
--- Seed Data for Sample Advisories
-INSERT INTO public.crop_advisories (crop_id, crop_stage, weather_condition, advice_english, advice_hindi)
-SELECT id, 'Vegetative', 'Heavy Rain Warning',
-'Heavy rain expected. Ensure field drainage to prevent waterlogging and delay nitrogen top-dressing until weather clears.',
-'भारी बारिश की संभावना है। जलभराव रोकने के लिए खेत में जल निकासी की व्यवस्था करें और यूरिया की टॉप-ड्रेसिंग टालें।'
-FROM public.crops WHERE name = 'Rice' LIMIT 1;
-
-INSERT INTO public.crop_advisories (crop_id, crop_stage, weather_condition, advice_english, advice_hindi)
-SELECT id, 'Flowering', 'Normal',
-'Maintain optimum moisture level during earhead formation. Spray NPK 13-0-45 @ 10g/L for grain filling.',
-'बालियां बनते समय नमी बनाए रखें। दानों के भराव हेतु 13-0-45 घुलनशील खाद का स्प्रे करें।'
-FROM public.crops WHERE name = 'Wheat' LIMIT 1;
