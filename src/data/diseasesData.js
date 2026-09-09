@@ -8,7 +8,7 @@ export const cropDiseasesDatabase = [
     confidence: 96.4,
     severity: "Critical",
     severityColor: "text-rose-600 bg-rose-50 border-rose-200",
-    sampleImage: "https://images.unsplash.com/photo-1592417817098-8f3d69109853?auto=format&fit=crop&q=80&w=400",
+    sampleImage: "/tomato-late-blight.svg",
     symptoms: {
       en: "Dark, water-soaked irregular spots on leaves that rapidly enlarge and turn purplish-brown. A pale white downy mold appears on the underside of leaves during humid mornings. Stems develop dark greasy lesions.",
       hi: "पत्तियों पर गहरे भूरे या काले रंग के जलसिक्त धब्बे जो तेजी से फैलते हैं। अधिक नमी वाले मौसम में पत्ती की निचली सतह पर सफेद फफूंद दिखाई देती है। तने पर काले चिकने घाव बन जाते हैं।"

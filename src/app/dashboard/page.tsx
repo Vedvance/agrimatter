@@ -13,6 +13,7 @@ import { Badge } from '@/components/ui/Badge';
 import { Alert } from '@/components/ui/Alert';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { CropDoctorEntry } from '@/components/CropDoctorEntry';
+import { DashboardInsights } from '@/components/DashboardInsights';
 import { 
   CloudSun, 
   Droplets, 
@@ -91,6 +92,14 @@ export default function DashboardPage() {
           "{weather?.farmingAdvice[language] || t.dashboard.sprayingAdvice}"
         </p>
       </Alert>
+
+      {weather && (
+        <DashboardInsights
+          weather={weather}
+          activeCrop={activeCrop}
+          language={language}
+        />
+      )}
 
       {/* Weather Overview Widget */}
       <Card className="bg-gradient-to-br from-sky-50 to-emerald-50/30 border-sky-200">

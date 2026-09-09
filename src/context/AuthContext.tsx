@@ -18,6 +18,10 @@ interface AuthContextType {
   activeCrop: FarmerCrop | null;
   isLoggedIn: boolean;
   isSupabaseLive: boolean;
+  authReady: boolean;
+  authModalOpen: boolean;
+  openAuthModal: () => void;
+  closeAuthModal: () => void;
   sendOtp: (phone: string) => Promise<{ success: boolean; message: string }>;
   verifyOtp: (phone: string, otp: string, name?: string) => Promise<{ success: boolean; message: string }>;
   signUpWithEmail: (email: string, pass: string, name: string) => Promise<{ success: boolean; message: string; requiresEmailConfirmation?: boolean }>;
@@ -36,6 +40,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [farm, setFarm] = useState<Farm | null>(null);
   const [activeCrop, setActiveCropState] = useState<FarmerCrop | null>(null);
   const [isSupabaseLive, setIsSupabaseLive] = useState(false);
+  const [authReady, setAuthReady] = useState(false);
+  const [authModalOpen, setAuthModalOpen] = useState(false);
 
   useEffect(() => {
     const isLive = isSupabaseConfigured();
@@ -48,8 +54,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     if (storedUser) {
       try { setUser(JSON.parse(storedUser)); } catch (e) { setUser(MOCK_PROFILE); }
-    } else {
-      setUser(MOCK_PROFILE);
     }
 
     if (storedFarm) {
@@ -63,6 +67,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } else {
       setActiveCropState(MOCK_FARMER_CROP);
     }
+
+    setAuthReady(true);
 
     // 2. Attach Supabase Auth State Change Listener if configured
     if (isLive) {
@@ -313,6 +319,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       activeCrop,
       isLoggedIn: !!user,
       isSupabaseLive,
+      authReady,
+      authModalOpen,
+      openAuthModal: () => setAuthModalOpen(true),
+      closeAuthModal: () => setAuthModalOpen(false),
       sendOtp,
       verifyOtp,
       signUpWithEmail,

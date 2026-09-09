@@ -7,6 +7,7 @@ import { usePathname } from 'next/navigation';
 import { useLanguage } from '@/context/LanguageContext';
 import { useAuth } from '@/context/AuthContext';
 import { LanguageToggle } from '@/components/LanguageToggle';
+import { ProtectedLink } from '@/components/ProtectedLink';
 import { useTheme } from '@/context/ThemeContext';
 import { Sprout, Menu, X, CloudSun, Leaf, FlaskConical, Bot, User, ShieldAlert, Moon, Sun } from 'lucide-react';
 
@@ -53,7 +54,7 @@ export const Navbar: React.FC = () => {
               const Icon = link.icon;
               const isActive = pathname === link.href;
               return (
-                <Link
+                <ProtectedLink
                   key={link.href}
                   href={link.href}
                   className={`flex items-center space-x-1.5 px-3 py-2 rounded-lg text-xs font-bold transition-all ${
@@ -64,7 +65,7 @@ export const Navbar: React.FC = () => {
                 >
                   <Icon className="w-4 h-4" />
                   <span>{link.label}</span>
-                </Link>
+                </ProtectedLink>
               );
             })}
           </nav>
@@ -93,12 +94,12 @@ export const Navbar: React.FC = () => {
                 </Link>
               </div>
             ) : (
-              <Link
+              <ProtectedLink
                 href="/login"
                 className="px-4 py-2 text-xs font-bold text-white bg-agri-green-700 hover:bg-agri-green-800 rounded-xl transition"
               >
                 {t.nav.login}
-              </Link>
+              </ProtectedLink>
             )}
           </div>
 
@@ -131,7 +132,7 @@ export const Navbar: React.FC = () => {
             const Icon = link.icon;
             const isActive = pathname === link.href;
             return (
-              <Link
+              <ProtectedLink
                 key={link.href}
                 href={link.href}
                 onClick={() => setMobileMenuOpen(false)}
@@ -141,7 +142,7 @@ export const Navbar: React.FC = () => {
               >
                 <Icon className="w-5 h-5" />
                 <span>{link.label}</span>
-              </Link>
+              </ProtectedLink>
             );
           })}
           

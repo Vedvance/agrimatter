@@ -1,5 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { useLanguage } from '../context/LanguageContext.jsx';
+import { useAuth } from '../context/AuthContext';
 import { cropDiseasesDatabase } from '../data/diseasesData';
 import { 
   Activity, 
@@ -18,8 +19,17 @@ import {
   Image as ImageIcon
 } from 'lucide-react';
 
+const leafFallbackImage = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400"%3E%3Crect width="600" height="400" fill="%230f766e"/%3E%3Cellipse cx="300" cy="220" rx="180" ry="90" transform="rotate(-18 300 220)" fill="%234ade80"/%3E%3Cpath d="M130 285 C245 230 345 170 485 80" stroke="%23dcfce7" stroke-width="8" fill="none"/%3E%3Cpath d="M245 225 L205 135 M300 190 L275 105 M355 155 L350 78" stroke="%23bbf7d0" stroke-width="5" fill="none"/%3E%3Ccircle cx="390" cy="180" r="18" fill="%23f59e0b" opacity=".85"/%3E%3Ccircle cx="330" cy="220" r="12" fill="%23ef4444" opacity=".8"/%3E%3Ctext x="300" y="365" text-anchor="middle" font-family="Arial" font-size="22" font-weight="700" fill="white"%3EAgriMatter Crop Sample%3C/text%3E%3C/svg%3E';
+
+const handleImageError = (event) => {
+  if (event.currentTarget.src !== leafFallbackImage) {
+    event.currentTarget.src = leafFallbackImage;
+  }
+};
+
 export const CropDoctor = () => {
   const { t, lang, speakText } = useLanguage();
+  const { isLoggedIn, openAuthModal } = useAuth();
   const [selectedImage, setSelectedImage] = useState(null);
   const [analyzing, setAnalyzing] = useState(false);
   const [diagnosis, setDiagnosis] = useState(null);
@@ -48,6 +58,10 @@ export const CropDoctor = () => {
   };
 
   const processImageFile = (file) => {
+    if (!isLoggedIn) {
+      openAuthModal();
+      return;
+    }
     if (!file) return;
 
     const supportedTypes = ['image/jpeg', 'image/png', 'image/webp'];
@@ -91,6 +105,10 @@ export const CropDoctor = () => {
   const handleDrop = (e) => {
     e.preventDefault();
     setIsDragging(false);
+    if (!isLoggedIn) {
+      openAuthModal();
+      return;
+    }
     processImageFile(e.dataTransfer.files[0]);
   };
 
@@ -175,7 +193,7 @@ export const CropDoctor = () => {
             )}
             {selectedImage && !analyzing && (
               <div className="mt-5 flex items-center gap-3 text-left bg-slate-50 rounded-2xl border border-slate-200 p-3">
-                <img src={selectedImage} alt="Selected leaf" className="w-14 h-14 object-cover rounded-xl border border-emerald-200" />
+                    <img src={selectedImage} onError={handleImageError} alt="Selected leaf" className="w-14 h-14 object-cover rounded-xl border border-emerald-200" />
                 <div className="min-w-0 flex-1">
                   <p className="text-xs font-bold text-slate-800 truncate">{lang === 'hi' ? 'फोटो तैयार है' : 'Photo ready for review'}</p>
                   <p className="text-[11px] text-emerald-700 font-semibold">{lang === 'hi' ? 'AI रिपोर्ट नीचे उपलब्ध है' : 'AI report is ready below'}</p>
@@ -202,11 +220,12 @@ export const CropDoctor = () => {
               {cropDiseasesDatabase.slice(0, 4).map((item) => (
                 <button
                   key={item.id}
-                  onClick={() => runDiagnosis(item)}
+                  onClick={() => isLoggedIn ? runDiagnosis(item) : openAuthModal()}
                   className="group flex flex-col items-start p-2.5 rounded-2xl border border-slate-200 hover:border-emerald-400 hover:bg-emerald-50/50 transition text-left"
                 >
                   <img
                     src={item.sampleImage}
+                    onError={handleImageError}
                     alt={item.diseaseNameEn}
                     className="w-full h-24 object-cover rounded-xl mb-2 group-hover:scale-102 transition"
                   />
@@ -245,6 +264,7 @@ export const CropDoctor = () => {
                   {selectedImage && (
                     <img
                       src={selectedImage}
+                      onError={handleImageError}
                       alt="Scanned leaf"
                       className="w-20 h-20 rounded-2xl object-cover border-2 border-emerald-500 shadow-sm"
                     />
@@ -362,7 +382,7 @@ export const CropDoctor = () => {
                   : 'Upload an infected leaf photo on the left or select a sample leaf to demonstrate instant pathology diagnosis.'}
               </p>
               <button
-                onClick={() => runDiagnosis(cropDiseasesDatabase[0])}
+                onClick={() => isLoggedIn ? runDiagnosis(cropDiseasesDatabase[0]) : openAuthModal()}
                 className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-5 py-2.5 rounded-xl shadow-md transition"
               >
                 {lang === 'hi' ? 'टमाटर का नमूना टेस्ट करें' : 'Try Tomato Demo Leaf'}

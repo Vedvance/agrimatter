@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600" role="img" aria-labelledby="title desc">
+  <title id="title">Tomato plant with late blight leaf symptoms</title>
+  <desc id="desc">A tomato plant with red tomatoes and a leaf showing dark late blight spots.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#064e3b"/>
+      <stop offset="1" stop-color="#14532d"/>
+    </linearGradient>
+    <linearGradient id="tomato" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fb7185"/>
+      <stop offset="1" stop-color="#be123c"/>
+    </linearGradient>
+  </defs>
+  <rect width="900" height="600" rx="36" fill="url(#bg)"/>
+  <circle cx="760" cy="110" r="78" fill="#fef3c7" opacity=".12"/>
+  <path d="M450 570 C446 450 458 335 455 185" stroke="#86efac" stroke-width="18" fill="none" stroke-linecap="round"/>
+  <path d="M452 345 C345 285 250 286 142 198 C260 177 362 220 457 290" fill="#4ade80" stroke="#bbf7d0" stroke-width="5"/>
+  <path d="M457 270 C544 190 636 182 755 229 C650 290 548 302 457 310" fill="#22c55e" stroke="#bbf7d0" stroke-width="5"/>
+  <path d="M455 420 C350 366 256 390 178 340 C292 319 382 346 456 380" fill="#16a34a" stroke="#bbf7d0" stroke-width="5"/>
+  <path d="M454 205 C384 147 333 111 270 92 C354 72 425 113 469 171" fill="#86efac" stroke="#dcfce7" stroke-width="5"/>
+  <path d="M454 185 C548 109 620 98 709 122 C650 190 553 214 460 226" fill="#4ade80" stroke="#dcfce7" stroke-width="5"/>
+  <g fill="url(#tomato)" stroke="#fecdd3" stroke-width="5">
+    <circle cx="315" cy="365" r="64"/>
+    <circle cx="590" cy="344" r="67"/>
+    <circle cx="430" cy="466" r="72"/>
+  </g>
+  <g fill="#166534">
+    <path d="M315 302 l-12 25 24 0z"/><path d="M590 278 l-12 27 25 0z"/><path d="M430 394 l-13 29 27 0z"/>
+  </g>
+  <g fill="#451a03" opacity=".85">
+    <circle cx="240" cy="235" r="17"/><circle cx="285" cy="250" r="10"/><circle cx="337" cy="215" r="14"/><circle cx="626" cy="239" r="18"/><circle cx="680" cy="223" r="11"/>
+  </g>
+  <rect x="34" y="486" width="390" height="76" rx="18" fill="#022c22" opacity=".86"/>
+  <text x="62" y="520" fill="#fef3c7" font-family="Arial, sans-serif" font-size="24" font-weight="700">TOMATO • LATE BLIGHT</text>
+  <text x="62" y="548" fill="#bbf7d0" font-family="Arial, sans-serif" font-size="15">Dark water-soaked leaf lesions</text>
+</svg>

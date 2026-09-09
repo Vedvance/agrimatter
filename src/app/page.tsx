@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import Link from 'next/link';
 import gsap from 'gsap';
 import { useLanguage } from '@/context/LanguageContext';
@@ -8,6 +8,8 @@ import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Alert } from '@/components/ui/Alert';
 import { CropDoctorEntry } from '@/components/CropDoctorEntry';
+import { ProtectedLink } from '@/components/ProtectedLink';
+import { FAQSection } from '@/components/FAQSection';
 import { 
   Sprout, 
   CloudSun, 
@@ -15,14 +17,11 @@ import {
   FlaskConical, 
   Bot, 
   ArrowRight, 
-  HelpCircle, 
-  ChevronDown,
   Award
 } from 'lucide-react';
 
 export default function LandingPage() {
   const { t, language } = useLanguage();
-  const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
   const pageRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -137,27 +136,6 @@ export default function LandingPage() {
     }
   ];
 
-  const faqs = [
-    {
-      q: language === 'hi' ? 'एग्रीमैटर किसानों की कैसे मदद करता है?' : 'How does Agrimatter help farmers?',
-      a: language === 'hi'
-        ? 'एग्रीमैटर आपके स्थान, मौसम, मिट्टी के प्रकार और सिंचाई के आधार पर सरल खेती की सलाह प्रदान करता है।'
-        : 'Agrimatter provides simple farming recommendations tailored to your village location, soil type, irrigation, and crop growth stage.'
-    },
-    {
-      q: language === 'hi' ? 'क्या यह ऐप हिंदी में उपलब्ध है?' : 'Is Agrimatter available in Hindi?',
-      a: language === 'hi'
-        ? 'हाँ! ऐप के ऊपर दाईं ओर दिए गए स्विच से आप कभी भी हिंदी और अंग्रेजी में बदल सकते हैं।'
-        : 'Yes! Toggle instantly between English and Hindi anytime using the header language switcher.'
-    },
-    {
-      q: language === 'hi' ? 'क्या खाद की सलाह सुरक्षित है?' : 'Is fertilizer advice safe to follow?',
-      a: language === 'hi'
-        ? 'हम हमेशा नियम-आधारित सामान्य मार्गदर्शन प्रदान करते हैं और मिट्टी परीक्षण रिपोर्ट या स्थानीय कृषि अधिकारी से पुष्टि की सलाह देते हैं।'
-        : 'We follow strict agronomical guidelines and always display mandatory disclaimers recommending official soil test confirmation.'
-    }
-  ];
-
   return (
     <div ref={pageRef} className="space-y-16 py-4">
       <div data-gsap="upload">
@@ -189,12 +167,12 @@ export default function LandingPage() {
           </div>
 
           <div data-gsap="hero-item" className="flex flex-col sm:flex-row gap-3 pt-2">
-            <Link href="/dashboard">
+            <ProtectedLink href="/dashboard">
               <Button size="lg" className="w-full sm:w-auto bg-amber-500 hover:bg-amber-600 text-black font-extrabold shadow-lg">
                 {t.hero.getStarted}
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
-            </Link>
+            </ProtectedLink>
             <Link href="/onboarding">
               <Button variant="outline" size="lg" className="w-full sm:w-auto border-white text-white hover:bg-white/10">
                 {t.nav.onboarding}
@@ -245,10 +223,10 @@ export default function LandingPage() {
                   </div>
 
                   <div className="pt-4 mt-4 border-t border-gray-100">
-                    <Link href={f.href} className="inline-flex items-center text-xs font-extrabold text-agri-green-700 hover:text-agri-green-900">
+                    <ProtectedLink href={f.href} className="inline-flex items-center text-xs font-extrabold text-agri-green-700 hover:text-agri-green-900">
                       <span>{t.common.viewDetails}</span>
                       <ArrowRight className="w-3.5 h-3.5 ml-1" />
-                    </Link>
+                    </ProtectedLink>
                   </div>
                 </Card>
               </div>
@@ -284,35 +262,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* FAQ Accordion */}
-      <section className="bg-white rounded-3xl p-6 sm:p-8 border border-emerald-100 space-y-6">
-        <h2 className="text-2xl font-black text-agri-green-900 flex items-center space-x-2">
-          <HelpCircle className="w-6 h-6 text-agri-green-700" />
-          <span>Frequently Asked Questions</span>
-        </h2>
-
-        <div className="space-y-3">
-          {faqs.map((faq, index) => {
-            const isOpen = openFaqIndex === index;
-            return (
-              <div key={index} className="border border-gray-200 rounded-xl overflow-hidden">
-                <button
-                  onClick={() => setOpenFaqIndex(isOpen ? null : index)}
-                  className="w-full text-left p-4 bg-gray-50 hover:bg-emerald-50/50 flex justify-between items-center text-sm font-bold text-agri-green-900"
-                >
-                  <span>{faq.q}</span>
-                  <ChevronDown className={`w-5 h-5 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
-                </button>
-                {isOpen && (
-                  <div className="p-4 bg-white text-xs text-gray-600 leading-relaxed border-t border-gray-100">
-                    {faq.a}
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
-      </section>
+      <FAQSection initialLanguage={language} />
 
     </div>
   );
