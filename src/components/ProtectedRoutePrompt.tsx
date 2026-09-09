@@ -1,20 +1,21 @@
 'use client';
 
 import { useEffect } from 'react';
-import { usePathname } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 
-const protectedPaths = ['/dashboard', '/weather', '/crop-advisor', '/soil-health', '/fertilizer-guide', '/ai-assistant', '/profile', '/admin'];
-
 export function ProtectedRoutePrompt() {
-  const pathname = usePathname();
   const { authReady, isLoggedIn, openAuthModal } = useAuth();
 
   useEffect(() => {
-    if (authReady && !isLoggedIn && protectedPaths.some((path) => pathname === path || pathname.startsWith(`${path}/`))) {
-      openAuthModal();
+    if (authReady && !isLoggedIn) {
+      // Automatically show the login/signup popup modal on initial website load
+      const hasShownModal = sessionStorage.getItem('agrimatter_initial_popup_shown');
+      if (!hasShownModal) {
+        sessionStorage.setItem('agrimatter_initial_popup_shown', 'true');
+        openAuthModal();
+      }
     }
-  }, [authReady, isLoggedIn, openAuthModal, pathname]);
+  }, [authReady, isLoggedIn, openAuthModal]);
 
   return null;
 }

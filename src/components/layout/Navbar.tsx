@@ -13,7 +13,7 @@ import { Sprout, Menu, X, CloudSun, Leaf, FlaskConical, Bot, User, ShieldAlert, 
 
 export const Navbar: React.FC = () => {
   const { t } = useLanguage();
-  const { isLoggedIn, user, logout } = useAuth();
+  const { isLoggedIn, user, logout, openAuthModal } = useAuth();
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { theme, toggleTheme, mounted } = useTheme();
@@ -94,12 +94,13 @@ export const Navbar: React.FC = () => {
                 </Link>
               </div>
             ) : (
-              <ProtectedLink
-                href="/login"
+              <button
+                type="button"
+                onClick={openAuthModal}
                 className="px-4 py-2 text-xs font-bold text-white bg-agri-green-700 hover:bg-agri-green-800 rounded-xl transition"
               >
                 {t.nav.login}
-              </ProtectedLink>
+              </button>
             )}
           </div>
 
@@ -167,13 +168,16 @@ export const Navbar: React.FC = () => {
                 {t.nav.logout}
               </button>
             ) : (
-              <Link
-                href="/login"
-                onClick={() => setMobileMenuOpen(false)}
+              <button
+                type="button"
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  openAuthModal();
+                }}
                 className="text-xs font-bold text-agri-green-800"
               >
                 {t.nav.login}
-              </Link>
+              </button>
             )}
           </div>
         </div>

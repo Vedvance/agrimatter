@@ -2,12 +2,12 @@
 
 import React, { useEffect, useRef } from 'react';
 import Link from 'next/link';
-import gsap from 'gsap';
+
 import { useLanguage } from '@/context/LanguageContext';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Alert } from '@/components/ui/Alert';
-import { CropDoctorEntry } from '@/components/CropDoctorEntry';
+
 import { ProtectedLink } from '@/components/ProtectedLink';
 import { FAQSection } from '@/components/FAQSection';
 import { 
@@ -28,74 +28,75 @@ export default function LandingPage() {
     const page = pageRef.current;
     if (!page) return;
 
-    const animationContext = gsap.context(() => {
-      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      const uploadPanel = page.querySelector('[data-gsap="upload"]');
-      const hero = page.querySelector('[data-gsap="hero"]');
-      const alert = page.querySelector('[data-gsap="alert"]');
-      const heroItems = gsap.utils.toArray<HTMLElement>('[data-gsap="hero-item"]');
-      const heroSweep = page.querySelector('[data-gsap="hero-sweep"]');
-      const cards = gsap.utils.toArray<HTMLElement>('[data-gsap="feature-card"]');
-      const icons = gsap.utils.toArray<HTMLElement>('[data-gsap="feature-icon"]');
+    let animationContext: any;
+    import('gsap').then(({ default: gsap }) => {
+      animationContext = gsap.context(() => {
+        const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const hero = page.querySelector('[data-gsap="hero"]');
+        const alert = page.querySelector('[data-gsap="alert"]');
+        const heroItems = gsap.utils.toArray<HTMLElement>('[data-gsap="hero-item"]');
+        const heroSweep = page.querySelector('[data-gsap="hero-sweep"]');
+        const cards = gsap.utils.toArray<HTMLElement>('[data-gsap="feature-card"]');
+        const icons = gsap.utils.toArray<HTMLElement>('[data-gsap="feature-icon"]');
 
-      if (reduceMotion) {
-        gsap.set([uploadPanel, hero, alert, ...heroItems, heroSweep, ...cards, ...icons], { clearProps: 'all' });
-        return;
-      }
+        if (reduceMotion) {
+          gsap.set([hero, alert, ...heroItems, heroSweep, ...cards, ...icons], { clearProps: 'all' });
+          return;
+        }
 
-      const introTimeline = gsap.timeline();
-      introTimeline
-        .fromTo(uploadPanel, { autoAlpha: 0, y: 24 }, { autoAlpha: 1, y: 0, duration: 0.7, ease: 'power3.out' })
-        .fromTo(hero, { autoAlpha: 0, y: 24 }, { autoAlpha: 1, y: 0, duration: 0.7, ease: 'power3.out' }, '-=0.45')
-        .fromTo(heroItems, { autoAlpha: 0, y: 16 }, { autoAlpha: 1, y: 0, duration: 0.45, stagger: 0.08, ease: 'power2.out' }, '-=0.35')
-        .fromTo(alert, { autoAlpha: 0, y: 18 }, { autoAlpha: 1, y: 0, duration: 0.55, ease: 'power2.out' }, '-=0.12')
-        .fromTo(cards, { autoAlpha: 0, y: 20 }, { autoAlpha: 1, y: 0, duration: 0.55, stagger: 0.08, ease: 'power2.out' }, '-=0.18');
+        const introTimeline = gsap.timeline();
+        introTimeline
+          .fromTo(hero, { autoAlpha: 0, y: 24 }, { autoAlpha: 1, y: 0, duration: 0.7, ease: 'power3.out' })
+          .fromTo(heroItems, { autoAlpha: 0, y: 16 }, { autoAlpha: 1, y: 0, duration: 0.45, stagger: 0.08, ease: 'power2.out' }, '-=0.35')
+          .fromTo(alert, { autoAlpha: 0, y: 18 }, { autoAlpha: 1, y: 0, duration: 0.55, ease: 'power2.out' }, '-=0.12')
+          .fromTo(cards, { autoAlpha: 0, y: 20 }, { autoAlpha: 1, y: 0, duration: 0.55, stagger: 0.08, ease: 'power2.out' }, '-=0.18');
 
-      gsap.to(heroSweep, {
-        xPercent: 180,
-        duration: 3.8,
-        repeat: -1,
-        repeatDelay: 2.8,
-        ease: 'power1.inOut',
-      });
+        gsap.to(heroSweep, {
+          xPercent: 180,
+          duration: 3.8,
+          repeat: -1,
+          repeatDelay: 2.8,
+          ease: 'power1.inOut',
+        });
 
-      const handleEnter = (event: Event) => {
-        gsap.to(event.currentTarget, { y: -6, duration: 0.22, ease: 'power2.out' });
-      };
-      const handleLeave = (event: Event) => {
-        gsap.to(event.currentTarget, { y: 0, duration: 0.28, ease: 'power2.out' });
-      };
-      const handleIconEnter = (event: Event) => {
-        gsap.to(event.currentTarget, { rotate: 8, scale: 1.12, duration: 0.25, ease: 'back.out(2)' });
-      };
-      const handleIconLeave = (event: Event) => {
-        gsap.to(event.currentTarget, { rotate: 0, scale: 1, duration: 0.3, ease: 'power2.out' });
-      };
+        const handleEnter = (event: Event) => {
+          gsap.to(event.currentTarget, { y: -6, duration: 0.22, ease: 'power2.out' });
+        };
+        const handleLeave = (event: Event) => {
+          gsap.to(event.currentTarget, { y: 0, duration: 0.28, ease: 'power2.out' });
+        };
+        const handleIconEnter = (event: Event) => {
+          gsap.to(event.currentTarget, { rotate: 8, scale: 1.12, duration: 0.25, ease: 'back.out(2)' });
+        };
+        const handleIconLeave = (event: Event) => {
+          gsap.to(event.currentTarget, { rotate: 0, scale: 1, duration: 0.3, ease: 'power2.out' });
+        };
 
-      cards.forEach((card) => {
-        card.addEventListener('mouseenter', handleEnter);
-        card.addEventListener('mouseleave', handleLeave);
-      });
-      icons.forEach((icon) => {
-        icon.addEventListener('mouseenter', handleIconEnter);
-        icon.addEventListener('mouseleave', handleIconLeave);
-      });
-
-      return () => {
-        introTimeline.kill();
-        gsap.killTweensOf(heroSweep);
         cards.forEach((card) => {
-          card.removeEventListener('mouseenter', handleEnter);
-          card.removeEventListener('mouseleave', handleLeave);
+          card.addEventListener('mouseenter', handleEnter);
+          card.addEventListener('mouseleave', handleLeave);
         });
         icons.forEach((icon) => {
-          icon.removeEventListener('mouseenter', handleIconEnter);
-          icon.removeEventListener('mouseleave', handleIconLeave);
+          icon.addEventListener('mouseenter', handleIconEnter);
+          icon.addEventListener('mouseleave', handleIconLeave);
         });
-      };
-    }, page);
 
-    return () => animationContext.revert();
+        return () => {
+          introTimeline.kill();
+          gsap.killTweensOf(heroSweep);
+          cards.forEach((card) => {
+            card.removeEventListener('mouseenter', handleEnter);
+            card.removeEventListener('mouseleave', handleLeave);
+          });
+          icons.forEach((icon) => {
+            icon.removeEventListener('mouseenter', handleIconEnter);
+            icon.removeEventListener('mouseleave', handleIconLeave);
+          });
+        };
+      }, page);
+    });
+
+    return () => animationContext?.revert();
   }, []);
 
   const features = [
@@ -138,10 +139,6 @@ export default function LandingPage() {
 
   return (
     <div ref={pageRef} className="space-y-16 py-4">
-      <div data-gsap="upload">
-        <CropDoctorEntry />
-      </div>
-      
       {/* Hero Section */}
       <section data-gsap="hero" className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-agri-green-900 via-agri-green-800 to-agri-brown-900 text-white p-6 sm:p-12 shadow-xl border border-emerald-700">
         <div data-gsap="hero-sweep" className="pointer-events-none absolute -left-1/3 top-0 h-full w-1/4 -skew-x-12 bg-white/10 blur-2xl" />

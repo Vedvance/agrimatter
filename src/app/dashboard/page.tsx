@@ -12,7 +12,6 @@ import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { Alert } from '@/components/ui/Alert';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
-import { CropDoctorEntry } from '@/components/CropDoctorEntry';
 import { DashboardInsights } from '@/components/DashboardInsights';
 import { 
   CloudSun, 
@@ -61,8 +60,6 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6 py-2">
-      <CropDoctorEntry />
-      
       {/* Top Banner Greeting */}
       <div className="bg-gradient-to-r from-agri-green-800 to-agri-green-900 rounded-3xl p-6 text-white shadow-lg flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div className="space-y-1">
